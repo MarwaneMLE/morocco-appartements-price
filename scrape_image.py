@@ -1,4 +1,4 @@
-from selenium.webdriver import ActionChains 
+"""from selenium.webdriver import ActionChains 
 
 # Permet d'utiliser le WebDriver pour contrôler un navigateur web
 from selenium import webdriver
@@ -34,4 +34,51 @@ driver.get(url)
 
 # Pause de 10 secondes
 time.sleep(10)
-d
+d"""
+
+import pandas as pd
+data = pd.read_csv("/home/marwane/mlops-projects/morocco-appartements-price/data/moroccan-houce-price-1.csv")
+
+print(data.features_dict.values[0:3])
+
+import pandas as pd
+import ast
+
+# Original list of strings representing dictionaries
+data1 = [
+    "{'112 m²': '112 m²', '3 Pièces': '3 Pièces', '2 Chambres': '2 Chambres', '1 Salle de bain': '1 Salle de bain'}",
+    "{'60 m²': '60 m²', '1 Salle de bain': '1 Salle de bain'}",
+    "{'71 m²': '71 m²', '3 Pièces': '3 Pièces', '2 Chambres': '2 Chambres', '2 Salles de bains': '2 Salles de bains'}"
+]
+
+# Convert the string representations to dictionaries
+dicts = [ast.literal_eval(item) for item in data1]
+
+# Convert the list of dictionaries into a pandas DataFrame
+df = pd.DataFrame(dicts)
+
+# Display the DataFrame
+print(df)
+
+
+import pandas as pd
+import ast
+
+# Original list of strings representing dictionaries
+data1 = [
+    "{'112 m²': '112 m²', '3 Pièces': '3 Pièces', '2 Chambres': '2 Chambres', '1 Salle de bain': '1 Salle de bain'}",
+    "{'60 m²': '60 m²', '1 Salle de bain': '1 Salle de bain'}",
+    "{'71 m²': '71 m²', '3 Pièces': '3 Pièces', '2 Chambres': '2 Chambres', '2 Salles de bains': '2 Salles de bains'}"
+]
+
+# Convert the string representations to dictionaries
+dicts = [ast.literal_eval(item) for item in data1]
+
+# Filter dictionaries to keep only keys that contain 'm²'
+filtered_dicts = [{k: v for k, v in d.items() if 'm²' in k} for d in dicts]
+
+# Convert the filtered list of dictionaries into a pandas DataFrame
+df = pd.DataFrame(filtered_dicts)
+
+# Display the DataFrame
+print(df)
