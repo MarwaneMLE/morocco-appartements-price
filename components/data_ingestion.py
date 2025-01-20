@@ -26,7 +26,7 @@ class DataIngestion():
     def initiate_data_ingestion(self):
         logging.info("Data ingestion started")
         try:
-            data = pd.read_csv("/home/marwane/mlops-projects/morocco-appartements-price/data-houses-price-orgnised-not-prepared.csv")
+            data = pd.read_csv("/home/marwane/mlops-projects/morocco-appartements-price/data-houses-price-orgnised-not-prepared.csv", low_memory=False)
             
             try:
                 os.makedirs(os.path.dirname(os.path.join(self.ingestion_config.immoblier_data_path)))
@@ -42,9 +42,9 @@ class DataIngestion():
             test_data.to_csv(self.ingestion_config.test_data_path, index=False)
             logging.info("The data is splited into train and test set")
 
-            print(train_data.head(1))
-            print("-----------------------")
-            print(test_data.head(1))
+            #print(train_data.head(1))
+            #print("-----------------------")
+            #print(test_data.head(1))
 
             return (
                 self.ingestion_config.train_data_path,
@@ -56,7 +56,7 @@ class DataIngestion():
 
 
 
-
+"""
 if __name__ == "__main__":
     obj_data_ingest = DataIngestion()
-    obj_data_ingest.initiate_data_ingestion()
+    obj_data_ingest.initiate_data_ingestion()"""

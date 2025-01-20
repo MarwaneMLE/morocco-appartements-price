@@ -8,19 +8,34 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
+import pickle 
+import logging
 
+
+def save_object(file_path, object):
+    try:
+        dir_path = os.path.dirname(file_path)
+        
+        os.makedirs(dir_path, exist_ok=True)
+
+        with open(file_path, "wb") as file_obj:
+            pickle.dump(object, file_obj)
+        logging.info("Object is saved at {}".format(file_path))
+
+    except Exception as e:
+        logging.info('Exception occured while saving object')
+        print(e)
+    
 
 @dataclass
 class DataTransformationConfig:
     precessor_obj_file_path = os.path.join("artifacts", "precessor.pkl")
 
-
 class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
  
- 
-    def get_transormed_data(self):
+    def get_transformed_data(self):
         try:
             # Separte categorical & numerical columns
             categorical_cols = ['address', 'description', 'type_de_bien', 'etat', 'état', 'standing', 'livraison1', 'etat_du_bien', 'orientation', 'type_du_sol', 'type_de_terrain', 'constructibilité', 'statut_du_terrain']
@@ -66,4 +81,44 @@ class DataTransformation:
             return preprocessor
 
         except Exception as e:
+            print(e)    
+
+    def initialize_data_transformation(self, train_path, test_path):
+        try:
+            # This data come from data ingestion from artifact dir
+            train_df = pd.read_csv(train_path)
+            test_df = pd.read_csv(test_path)
+ 
+            preprocessing_object = self.get_data_transformation()
+
+            target_column_name = "price"
+            drop_columns = [target_column_name, "id"]
+             
+            input_feature_train_df = train_df.drop(columns=drop_columns, axis=1)
+            target_feature_train_df = train_df[target_column_name]
+
+            input_feature_test_df = test_df.drop(columns=drop_columns, axis=1)
+            target_feature_test_df = test_df[target_column_name]
+
+            input_feature_train_arr = preprocessing_object.fit_transform(input_feature_train_df)
+            input_feature_test_arr = preprocessing_object.transform(input_feature_test_df)
+
+            #logging.info("Preprocesing in applyed on train and test data")
+
+            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
+            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+
+            save_object(
+                file_path=self.data_transformation_config.preprocessor_object_file_path,
+                object=preprocessing_object
+            )
+            #logging.info("The preprocessing pickle file is saved")
+
+            return (
+                train_arr,
+                test_arr
+            )
+        
+        except Exception as e:
+            logging.info("Exception occured  in the initiate_dataframe")
             print(e)
